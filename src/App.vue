@@ -15,7 +15,7 @@
 import Navigation from "./components/Navigation.vue";
 import Peer from 'peerjs';
 import { v4 as uuidv4 } from 'uuid';
-
+import Swal from 'sweetalert2';
 
 export default {
   data() {
@@ -35,6 +35,13 @@ export default {
     // var peerName = `gowtham-madurai-welcome-to-webrtc`;
     this.peer = new Peer(this.uuid);
 
+    // Shows received message
+    Swal.fire({
+      title: 'Created UUID..',
+      text: this.uuid,
+      type: 'success',
+      confirmButtonText: 'Cool',
+    });
   }
 }
 </script>
