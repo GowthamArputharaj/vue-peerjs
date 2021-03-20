@@ -2,7 +2,7 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    name: 'Gowtham Name HEllo INdex'
+    name: 'Chataroo'
   },
   getters: {
     getName: state => {

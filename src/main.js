@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import Peer from 'peerjs';
 import $ from 'jquery'
+require('bootstrap');
 
 // import { v4 as uuidv4 } from 'uuid';
 
