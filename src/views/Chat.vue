@@ -1,7 +1,7 @@
 <template>
   <div class="chat" id="chat">
     <div class="text-primary">
-      <small>Welcome {{ $store.state.name }} to Chat place..</small>
+      <small>Welcome {{ authUser.displayName }} to Chat place..</small>
     </div>
 
     <!-- hidden :d-none -->
@@ -9,7 +9,7 @@
       <div class="col-lg-4 col-md-6 col-sm-12 border border-white pt-4 ">
         <div class="form-group ">
           <label for="name">Name</label>
-          <input type="text" class="form-control" name="name" v-model="name" >
+          <input type="text" class="form-control" name="displayName" v-model="displayName" >
         </div>
         <div class="form-group">
           <button class="rounded btn btn-danger" @click="changeName()">CHnage</button>
@@ -20,30 +20,32 @@
     <div class="row text-primary ">
       <div class="rounded col-lg-4 col-md-6 col-sm-12 shadow-sm pt-4 opacity-half float-right ">
         <div class="form-group ">
-          <label for="connect_to">Connect to</label>
-          <input type="text" class="form-control" name="connect_to" v-model="connectTo" placeholder="Enter peer id">
+          <label for="connect_to">Connect to {{ connectTo }}</label>
+          <select id="selectUser" v-model="connectTo" class="form-control">
+            <option value="none">Select any user</option>
+            <option v-for="user in allUsers" v-bind:key="user.uid" :value="user.uuid" >{{ user.displayName }}</option>
+          </select>
         </div>
         <div class="form-group mt-2">
           <label for="message">Message</label>
-          <textarea class="float-right form-control mb-2" v-model="message" name="message" cols="30" rows="3" placeholder="Send some message" v-on:keyup.enter="connectSendMessage()"></textarea>
+          <textarea class="float-right form-control mb-2" v-model.trim="message" name="message" cols="30" rows="3" placeholder="Send some message" v-on:keyup.enter="connectSendMessage()"></textarea>
         </div>
         <div class="form-group">
-          <button class="rounded btn btn-primary" @click="connectSendMessage()">Send Message</button>
+          <div class="form-group ">
+            <button class="rounded btn btn-primary" @click="connectSendMessage()">Send Message</button>
+          </div>
         </div>
       </div>
     </div>
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
-    <!-- <Navigation /> -->
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
-import Navigation from '@/components/Navigation.vue'
+// import Navigation from '@/components/Navigation.vue'
 import store from '../store'
-// import Peer from 'peerjs';
-// import { v4 as uuidv4 } from 'uuid';
+import Peer from 'peerjs';
 import Swal from 'sweetalert2'
 
 export default {
@@ -51,27 +53,44 @@ export default {
   data() {
     return {
       // uuid: '',
-      name: '',
-      // peer: null,
+      displayName: '',
+      peer: null,
       connectTo: null,
       message: null,
+      selectedUser: null,
     }
   },
-  props: [
-    "peer",
-    "uuid",
-  ],
+  computed: {
+    authUser() {
+      return this.$store.getters.getUser;
+    },
+    isAuth() {
+      return this.$store.getters.getIsAuth;
+    },
+    allUsers() {
+      var au = this.$store.getters.getAllUsers;
+      return au;
+    }
+  },
   created(){
 
-    console.log('My Peer id is: \n', this.uuid);
+    var user = this.authUser;
+
+    console.log('My Peer id is: \n', user.uuid);
     
     this.name = this.$store.getters.getName;
 
     // create peer
-    const peer = this.peer; 
+    // const peer = this.peer; 
+    this.peer = new Peer(this.authUser.uuid);
 
     // Peer connection event listener
-    peer.on('connection', (peerConnection) => {
+    this.peer.on('connection', (peerConnection) => {
+      Swal.fire({
+        title: 'Connected successfully',
+        type: 'success',
+        confirmButtonText: 'Cool',
+      });
 
       // Receive message event listener
       peerConnection.on('data', (data) => {
@@ -98,23 +117,24 @@ export default {
   },
   components: {
     // HelloWorld,
-    Navigation,
+    // Navigation,
   },
   methods: {
     changeName() {
-      this.$store.commit('changeName', this.name);
+      this.$store.commit('changeName', this.displayName);
     },
     connectSendMessage() {
       
       // create connection to another Peer
       const conn = this.peer.connect(this.connectTo);
 
-      // 
+      // send message to connectTo peer id
       conn.on('open', () => {
         conn.send(this.message);
         console.log('hi Connection opened  and Message Sent!')
+        this.message = '';
       });
-    }
+    },
   }
 }
 </script>
@@ -127,11 +147,11 @@ export default {
 .opacity-half {
   background-color: rgba(255, 255, 255, 0.1);
 }
-input, textarea{
+input, textarea, select {
   background-color: rgba(5, 178, 221, 0);
   /* opacity: 0; */
 }
-input:focus, textarea:focus{
+input:focus, textarea:focus, select:focus {
   background-color: rgba(5, 178, 221, 0);
   /* opacity: 0; */
 }

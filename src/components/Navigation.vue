@@ -1,29 +1,33 @@
 <template>
   <div id="navigation" class="">
     <nav class="navbar navbar-expand-lg navbar-light text-monospace font-weight-bold fixed-bottom mb-2 bg-transparent">
-      <!-- <router-link to="/" class="navbar-brand text-primary bg-white p-2 rounded mr-auto">Home</router-link> -->
 
-      <!-- <div class=" nav-item  ml-3  bg-warning text-center py-1 mt-1">
-        <router-link to="/" class="mx-2 navbar-brand">Home</router-link>
-      </div> -->
-
-      <button class="navbar-toggler border border-danger " type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler  " type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       
       <div class="w-100 collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav"> 
           <li class=" nav-item   bg-primary-opacity text-center py-1 mt-1">
-            <router-link to="/" class="nav-link">Home</router-link>
+            <router-link to="home" class="nav-link">Home</router-link>
           </li>
-          <li class=" nav-item   bg-primary-opacity text-center py-1 mt-1">
+          <li class=" nav-item   bg-primary-opacity text-center py-1 mt-1" v-if="isAuth">
             <router-link to="chat" class="nav-link">Chat</router-link>
           </li>
-          <li class=" nav-item   bg-primary-opacity text-center py-1 mt-1">
+          <li class=" nav-item   bg-primary-opacity text-center py-1 mt-1" v-if="isAuth">
             <router-link to="call" class="nav-link">Call</router-link>
           </li>
-          <li class=" nav-item   bg-primary-opacity text-center py-1 mt-1">
+          <li class=" nav-item   bg-primary-opacity text-center py-1 mt-1" v-if="isAuth">
             <router-link to="video" class="nav-link">Video</router-link>
+          </li>
+          <li class=" nav-item   bg-primary-opacity text-center py-1 mt-1 float-right" v-if="!isAuth">
+            <router-link to="login" class="nav-link">Login</router-link>
+          </li>
+          <li class=" nav-item   bg-primary-opacity text-center py-1 mt-1 float-right" v-if="!isAuth">
+            <router-link to="register" class="nav-link">Register</router-link>
+          </li>
+          <li class=" nav-item   bg-primary-opacity text-center py-1 mt-1 float-right" v-if="isAuth">
+            <a href="" class="nav-link" @click.prevent="logout()">Logout</a>
           </li>
         </ul>
       </div>
@@ -32,8 +36,42 @@
 </template>
 
 <script>
+import firebase from 'firebase'
+import db from '../db.js'
+
 export default {
   name: "Navigation",
+  computed: {
+    isAuth() {
+      console.log('NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNn1111', this.$store.getters.getIsAuth)
+      return this.$store.getters.getIsAuth;
+    }
+  },
+  methods: {
+    logout() {
+      firebase.auth()
+      .signOut()
+      .then(() => {
+        this.$store.commit('setName', null);
+        this.auth_user = null;
+
+        console.log('Logged out..');
+        // this.$store.state.uuid = this.$store.state.auth_displayName = this.$store.state.auth_email = '';
+        this.$store.commit('setUser', null);
+        this.$store.commit('setIsAuth', false);
+
+        this.$router.replace('login');
+
+      })
+      .catch(err => {
+        Swal.fire({
+          title: 'Error!',
+          text: err.message,
+          type: 'error',
+        })
+      })
+    }
+  }
 }
 </script>
 
@@ -52,6 +90,7 @@ export default {
   border-radius: 50%;
   height: 3rem;
   transform: rotate(90deg);
+  border: 1px solid red;
 }
 .text-white {
   color: white !important;

@@ -1,36 +1,44 @@
 <template>
   <div class="video" id="video">
     <div>
-      <small class="text-primary">Welcome to <i>Video Call</i> {{ $store.state.name }}..</small>
+      <small class="text-primary">Welcome to <i>Video Call</i> {{ authUser.displayName }}..</small>
     </div>
 
     <div class="row mx-auto text-primary">
       <div class="col-lg-4 col-md-6 col-sm-12 shadow-sm opacity-half pt-4 float-right">
         <div class="form-group ">
-          <label for="connect_to">Connect to</label>
-          <input type="text" class="form-control" name="connect_to" v-model="connectTo" placeholder="Enter peer id" >
+          <label for="connect_to">Connect to {{ connectTo }}</label>
+          <select id="selectUser" v-model="connectTo" class="form-control">
+            <option value="none">Select any user</option>
+            <option v-for="user in allUsers" v-bind:key="user.uid" :value="user.uuid" >{{ user.displayName }}</option>
+          </select>
         </div>
         <div class="form-group d-none ">
           <label for="message">Message</label>
           <textarea class="float-right" v-model="message" name="message" cols="30" rows="3" placeholder="Send some message" v-on:keyup.enter="connectCall()"></textarea>
         </div>
-        <div class="form-group">
-          <button class="rounded btn btn-primary" @click="connectCall()">Video Call</button>
+        <div class="row">
+          <div class="form-group">
+            <button class="rounded btn btn-primary" @click="connectCall()">Video Call</button>
+          </div>
+          <div class="form-group col-6">
+            <button class="rounded btn btn-danger float-right" @click="disconnectCall()">Disconnect Call</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="row mx-auto d-none">
-      <h2 class="text-center text-monospace">Video here</h2>
+    <!-- <div class="row mx-auto d-none">
+      <h2 class="text-center text-monospace">Video here</h2> -->
       <!-- <video v-bind:src="strm" width="300" height="200" controls></video> -->
-      <video id="other_stream" src="" width="300" height="200" controls></video>
-    </div>
+      <!-- <video id="other_stream" src="" width="300" height="200" controls></video>
+    </div> -->
 
-    <div class="row mx-auto d-none">
-      <h2 class="text-center text-monospace">My Stream here</h2>
+    <!-- <div class="row mx-auto d-none">
+      <h2 class="text-center text-monospace">My Stream here</h2> -->
       <!-- <video v-bind:src="strm" width="300" height="200" controls></video> -->
-      <video id="my_stream" src="" width="300" height="200" controls></video>
-    </div>
+      <!-- <video id="my_stream" src="" width="300" height="200" controls></video>
+    </div> -->
 
 
     <div class="row rounded my-4">
@@ -59,7 +67,7 @@
 <script>
 // @ is an alias to /src
 import store from '../store'
-// import Peer from 'peerjs';
+import Peer from 'peerjs';
 // import { v4 as uuidv4 } from 'uuid';
 import Swal from 'sweetalert2'
 
@@ -69,26 +77,36 @@ export default {
     return {
       // uuid: '',
       name: '',
-      // peer: null,
+      peer: null,
       connectTo: null,
       message: null,
       strm: null,
       my_stream: null,
     }
   },
-  props: [
-    "peer",
-    "uuid",
-  ],
+  computed: {
+    authUser() {
+      return this.$store.getters.getUser;
+    },
+    isAuth() {
+      return this.$store.getters.getIsAuth;
+    },
+    allUsers() {
+      var au = this.$store.getters.getAllUsers;
+      return au;
+    }
+  },
   created(){
 
-    console.log('My Peer id is: \n', this.uuid);
+    var user = this.$store.getters.getUser;
 
-    const peer = this.peer;
+    console.log('My Peer id is: \n', user.uuid);
+
+    this.peer = new Peer(this.authUser.uuid);
 
     // this.connectTo = history.length;
 
-    peer.on('call', async (call) => {
+    this.peer.on('call', async (call) => {
       this.my_stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
         console.log('this.my_stream');
         console.log(this.my_stream);
@@ -108,6 +126,16 @@ export default {
       // });
     });
 
+    // peer close event listener
+    this.peer.on('close', () => {
+      Swal.fire({
+        title: 'Connection status',
+        text: 'Peer connection is closed',
+        type: 'success', 
+        confirmButtonText: 'Okay'
+      });
+    });
+
     // this.peer = peer;
 
   },
@@ -116,7 +144,10 @@ export default {
       console.log('connectCall ()', this.connectTo);
 
       try {
-        
+          if(!this.peer) {
+            this.peer = new Peer(this.authUser.uuid);
+          }
+
           console.log('stream connectCall()');
           this.my_stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
           console.log(this.my_stream);
@@ -139,6 +170,17 @@ export default {
       }
     
       console.log('end');
+    },
+    disconnectCall() {
+      this.peer.destroy();
+      this.connectTo = 'none';
+
+      document.querySelector('#other_stream').srcObject = '';
+      document.querySelector('#my_stream').srcObject = '';
+
+      console.log('this.peer is ', this.peer);
+      console.log('this.connectTo is ', this.connectTo);
+      
     }
   }
 }
@@ -152,11 +194,11 @@ export default {
 .opacity-half {
   background-color: rgba(255, 255, 255, 0.1);
 }
-input, textarea{
+input, textarea, select {
   background-color: rgba(5, 178, 221, 0);
   /* opacity: 0; */
 }
-input:focus, textarea:focus{
+input:focus, textarea:focus, select:focus {
   background-color: rgba(5, 178, 221, 0);
   /* opacity: 0; */
 }

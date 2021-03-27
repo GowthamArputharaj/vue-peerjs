@@ -1,21 +1,29 @@
 <template>
   <div class="call" id="call">
     <div>
-      <small class="text-primary">Welcome to <i>Audio Call</i> {{ $store.state.name }}..</small>
+      <small class="text-primary">Welcome to <i>Audio Call</i> {{ authUser.displayName }}..</small>
     </div>
 
     <div class="row text-primary ">
       <div class="rounded col-lg-4 col-md-6 col-sm-12 shadow-sm pt-4 opacity-half float-right">
         <div class="form-group ">
-          <label for="connect_to">Connect to</label>
-          <input type="text" class="form-control" name="connect_to" v-model="connectTo" placeholder="Enter peer id">
+          <label for="connect_to">Connect to {{ connectTo }}</label>
+          <select id="selectUser" v-model="connectTo" class="form-control">
+            <option value="none">Select any user</option>
+            <option v-for="user in allUsers" v-bind:key="user.uid" :value="user.uuid" >{{ user.displayName }}</option>
+          </select>
         </div>
         <div class="form-group d-none">
           <label for="message">Message</label>
           <textarea class="float-right form-control mb-2" v-model="message" name="message" cols="30" rows="3" placeholder="Send some message" v-on:keyup.enter="connectCall()"></textarea>
         </div>
-        <div class="form-group">
-          <button class="rounded btn btn-primary" @click="connectCall()">Audio Call</button>
+        <div class="row">
+          <div class="form-group col-6">
+            <button class="rounded btn btn-primary" @click="connectCall()">Audio Call</button>
+          </div>
+          <div class="form-group col-6">
+            <button class="rounded btn btn-danger float-right" @click="disconnectCall()">Disconnect Call</button>
+          </div>
         </div>
       </div>
     </div>
@@ -26,7 +34,7 @@
             <h4 class=" text-monospace">Incoming Voice here</h4>
         </div>
         <div class="">
-          <audio src="" controls id="other_stream"></audio>
+          <audio src=""  id="other_stream" controls></audio>
         </div>
           
 
@@ -34,7 +42,7 @@
           <h4 class=" text-monospace">My Stream here</h4>
         </div>
         <div class="">
-          <audio src="" controls id="my_stream"></audio>
+          <audio src=""  id="my_stream" controls></audio>
         </div>
       </div>
     </div>
@@ -46,6 +54,7 @@
 // @ is an alias to /src
 import store from '../store'
 import Swal from 'sweetalert2'
+import Peer from 'peerjs'
 
 export default {
   name: 'Call',
@@ -53,26 +62,36 @@ export default {
     return {
       // uuid: '',
       name: '',
-      // peer: null,
+      peer: null,
       connectTo: null,
       message: null,
       strm: null,
       my_stream: null,
     }
   },
-  props: [
-    "peer",
-    "uuid",
-  ],
+  computed: {
+    authUser() {
+      return this.$store.getters.getUser;
+    },
+    isAuth() {
+      return this.$store.getters.getIsAuth;
+    },
+    allUsers() {
+      var au = this.$store.getters.getAllUsers;
+      return au;
+    }
+  },
   created(){
 
-    console.log('My Peer id is: \n', this.uuid);
+    var user = this.$store.getters.getUser;
 
-    const peer = this.peer;
+    console.log('My Peer id is: \n', user.uuid);
+
+    this.peer = new Peer(this.authUser.uuid);
 
     // this.connectTo = history.length;
 
-    peer.on('call', async (call) => {
+    this.peer.on('call', async (call) => {
       this.my_stream = await navigator.mediaDevices.getUserMedia({video: false, audio: true});
         console.log('this.my_stream');
         console.log(this.my_stream);
@@ -92,6 +111,16 @@ export default {
       // });
     });
 
+    // peer close event listener
+    this.peer.on('close', () => {
+      Swal.fire({
+        title: 'Connection status',
+        text: 'Peer connection is closed',
+        type: 'success', 
+        confirmButtonText: 'Okay'
+      });
+    });
+
     // this.peer = peer;
 
   },
@@ -100,6 +129,9 @@ export default {
       console.log('connectCall ()', this.connectTo);
 
       try {
+          if(!this.peer) {
+            this.peer = new Peer(this.authUser.uuid);
+          }
         
           console.log('stream connectCall()');
           this.my_stream = await navigator.mediaDevices.getUserMedia({video: false, audio: true});
@@ -118,11 +150,22 @@ export default {
           });
         
       } catch (error) {
-       console.log('ERROR') ;
+       console.log('ERROR connectCall()') ;
        console.log(error.message);
       }
     
       console.log('end');
+    },
+    disconnectCall() {
+      this.peer.destroy();
+      this.connectTo = 'none';
+
+      document.querySelector('#other_stream').srcObject = '';
+      document.querySelector('#my_stream').srcObject = '';
+
+      console.log('this.peer is ', this.peer);
+      console.log('this.connectTo is ', this.connectTo);
+      
     }
   }
 }
@@ -136,11 +179,11 @@ export default {
 .opacity-half {
   background-color: rgba(255, 255, 255, 0.1);
 }
-input, textarea{
+input, textarea, select {
   background-color: rgba(5, 178, 221, 0);
   /* opacity: 0; */
 }
-input:focus, textarea:focus{
+input:focus, textarea:focus, select:focus {
   background-color: rgba(5, 178, 221, 0);
   /* opacity: 0; */
 }

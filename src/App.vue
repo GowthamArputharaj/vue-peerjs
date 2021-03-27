@@ -4,9 +4,9 @@
     <div class="fixed-top text-secondary bg-transparent text-center text-monospace py-1 m-0">
       <h3>Gowtham</h3>
     </div>
-    <Navigation />
+    <Navigation  />
     <div id="router_content " class="mx-5">
-      <router-view :peer="peer" :uuid="uuid" />
+      <router-view />
     </div>
   </div>
 </template>
@@ -16,6 +16,8 @@ import Navigation from "./components/Navigation.vue";
 import Peer from 'peerjs';
 import { v4 as uuidv4 } from 'uuid';
 import Swal from 'sweetalert2';
+import firebase from 'firebase';
+import db from './db.js';
 
 export default {
   data() {
@@ -23,24 +25,44 @@ export default {
       name: 'Gowtham',
       uuid: null,
       peer: null,
+      auth_user: null
     }
   },
   components: {
     Navigation,
   },
-  created() {
-    this.uuid = uuidv4();
+  beforeCreate() {
 
-    // this.peer = new Peer(this.uuid);
-    // var peerName = `gowtham-madurai-welcome-to-webrtc`;
-    this.peer = new Peer(this.uuid);
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (user) {
+        
+        var uid = user.uid;
 
-    // Shows received message
-    Swal.fire({
-      title: 'Created UUID..',
-      text: this.uuid,
-      type: 'success',
-      confirmButtonText: 'Cool',
+        this.auth_user = user;
+        console.log('USER IS ', user);
+
+        var db_user = await db.collection('users').doc(user.uid).get();
+
+        var payload = {
+          displayName: db_user.data().displayName,
+          email: db_user.data().email,
+          uid: db_user.data().uid,
+          uuid: db_user.data().uuid,
+        };
+        
+        this.$store.commit('setUser', payload);
+        this.$store.commit('setIsAuth', true);
+        
+        this.$router.replace('/home');
+          
+        // ...
+      } else {
+        // User is signed out
+        // ...
+
+        this.$router.push('login');
+
+      }
     });
   }
 }
