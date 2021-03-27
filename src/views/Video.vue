@@ -144,9 +144,7 @@ export default {
       console.log('connectCall ()', this.connectTo);
 
       try {
-          if(!this.peer) {
-            this.peer = new Peer(this.authUser.uuid);
-          }
+          this.peer = new Peer(this.authUser.uuid);
 
           console.log('stream connectCall()');
           this.my_stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});

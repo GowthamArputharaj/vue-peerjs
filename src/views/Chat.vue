@@ -86,11 +86,6 @@ export default {
 
     // Peer connection event listener
     this.peer.on('connection', (peerConnection) => {
-      Swal.fire({
-        title: 'Connected successfully',
-        type: 'success',
-        confirmButtonText: 'Cool',
-      });
 
       // Receive message event listener
       peerConnection.on('data', (data) => {

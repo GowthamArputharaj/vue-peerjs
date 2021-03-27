@@ -76,7 +76,7 @@ export default {
           this.$store.commit('setUser', payload);
           this.$store.commit('setIsAuth', true);
 
-          this.$router.replace('/home');
+          this.$router.push('home');
           
         })
         .catch((error) => {

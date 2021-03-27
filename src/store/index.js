@@ -165,7 +165,7 @@ export default createStore({
             context.commit('setUser', payload);
             context.commit('setIsAuth', true);
             
-            router.replace('/home');
+            router.push('home');
               
             // ...
           } else {

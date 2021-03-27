@@ -111,16 +111,9 @@ export default {
 
             });
           
-
             console.log('Register create*** THEN');
-              
-            // Swal.fire({
-            //   title: 'Registered successfully',
-            //   text: 'Welcome to CHat room',
-            //   type: 'success',
-            // });
 
-            this.$router.replace('/');
+            this.$router.push('/');
 
           })
           .catch((error) => {

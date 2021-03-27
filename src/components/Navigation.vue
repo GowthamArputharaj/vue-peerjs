@@ -60,7 +60,7 @@ export default {
         this.$store.commit('setUser', null);
         this.$store.commit('setIsAuth', false);
 
-        this.$router.replace('login');
+        this.$router.push('login');
 
       })
       .catch(err => {
