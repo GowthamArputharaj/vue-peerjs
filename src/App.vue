@@ -52,8 +52,11 @@ export default {
         
         this.$store.commit('setUser', payload);
         this.$store.commit('setIsAuth', true);
+
+
+        this.$store.dispatch('dbAuthUser');
         
-        this.$router.push('home');
+        // this.$router.push('home');
           
         // ...
       } else {
@@ -74,12 +77,16 @@ $secondary: #97e630;
 @import "node_modules/bootstrap/scss/bootstrap.scss";
 
 body {
-  // background: rgb(243, 237, 237);
-  // background-attachment: "./assets/forest.jpg";
   background-image: url("./assets/dark-leaves.jpg");
+  background-position: center;
   width: 100vw;
   height: 100vh;
   background-size: cover;
   z-index: -1;
 }
+// @media only screen and (min-width: 600px) {
+//   body {
+//     font-size: 1.5rem !important;
+//   }
+// }
 </style>

@@ -1,15 +1,15 @@
 <template>
   <div class="call" id="call">
     <div>
-      <small class="text-primary">Welcome to <i>Audio Call</i> {{ authUser.displayName }}..</small>
+      <small class="text-primary" v-if="authUser">Welcome to <i>Audio Call</i> {{ authUser.displayName }}..</small>
     </div>
 
     <div class="row text-primary ">
       <div class="rounded col-lg-4 col-md-6 col-sm-12 shadow-sm pt-4 opacity-half float-right">
         <div class="form-group ">
-          <label for="connect_to">Connect to {{ connectTo }}</label>
+          <label for="connect_to">Connect to {{ connectTo }} <span v-if="showSelectUserError" class="text-danger">( Please Select Any User )</span></label>
           <select id="selectUser" v-model="connectTo" class="form-control">
-            <option value="none">Select any user</option>
+            <option value="unknown">Select any user</option>
             <option v-for="user in allUsers" v-bind:key="user.uid" :value="user.uuid" >{{ user.displayName }}</option>
           </select>
         </div>
@@ -55,6 +55,7 @@
 import store from '../store'
 import Swal from 'sweetalert2'
 import Peer from 'peerjs'
+import { printPeerRefreshed } from '../helper'
 
 export default {
   name: 'Call',
@@ -63,10 +64,11 @@ export default {
       // uuid: '',
       name: '',
       peer: null,
-      connectTo: null,
+      connectTo: 'unknown',
       message: null,
       strm: null,
       my_stream: null,
+      showSelectUserError: false,
     }
   },
   computed: {
@@ -84,6 +86,8 @@ export default {
   created(){
 
     var user = this.$store.getters.getUser;
+    
+    this.$store.dispatch('allUsers', user.uid);
 
     console.log('My Peer id is: \n', user.uuid);
 
@@ -113,12 +117,15 @@ export default {
 
     // peer close event listener
     this.peer.on('close', () => {
-      Swal.fire({
-        title: 'Connection status',
-        text: 'Peer connection is closed',
-        type: 'success', 
-        confirmButtonText: 'Okay'
-      });
+      // Swal.fire({
+      //   title: 'Connection status',
+      //   text: 'Peer connection is refreshed',
+      //   type: 'success', 
+      //   confirmButtonText: 'Okay'
+      // });
+
+      printPeerRefreshed();
+
     });
 
     // this.peer = peer;
@@ -127,29 +134,38 @@ export default {
   methods: {
     async connectCall() {
       console.log('connectCall ()', this.connectTo);
+      
+      if(this.connectTo == 'unknown') {
+        this.showSelectUserError = true;
+      } else {
+        this.showSelectUserError = false;
+      }
 
-      try {
-          this.peer = new Peer(this.authUser.uuid);
-        
-          console.log('stream connectCall()');
-          this.my_stream = await navigator.mediaDevices.getUserMedia({video: false, audio: true});
-          console.log(this.my_stream);
-          document.querySelector('#my_stream').srcObject = this.my_stream;
-  
-          const call = this.peer.call(this.connectTo, this.my_stream);
-  
-          call.on('stream', (remoteStream) => {
-            // Show stream in some <video> element.
-            console.log('remoteStream connectCall()')
-            console.log(remoteStream);
-  
-            document.querySelector('#other_stream').srcObject = remoteStream;
-  
-          });
-        
-      } catch (error) {
-       console.log('ERROR connectCall()') ;
-       console.log(error.message);
+      if(this.connectTo != 'unknown') {
+        try {
+            this.peer = new Peer(this.authUser.uuid);
+          
+            console.log('stream connectCall()');
+            this.my_stream = await navigator.mediaDevices.getUserMedia({video: false, audio: true});
+            console.log(this.my_stream);
+            document.querySelector('#my_stream').srcObject = this.my_stream;
+    console.log('test........................................test')
+            const call = this.peer.call(this.connectTo, this.my_stream);
+console.log(this.peer, this.connectTo, this.my_stream, call)
+
+            call.on('stream', (remoteStream) => {
+              // Show stream in some <video> element.
+              console.log('remoteStream connectCall()')
+              console.log(remoteStream);
+    
+              document.querySelector('#other_stream').srcObject = remoteStream;
+    
+            });
+          
+        } catch (error) {
+         console.log('ERROR connectCall()') ;
+         console.log(error.message);
+        }
       }
     
       console.log('end');

@@ -142,16 +142,17 @@ export default createStore({
       }
 
     },
-    async dbAuthUser(context) {
+    async dbAuthUser(context, to_name = null) {
       var isAuth = context.getters.getIsAuth;
       if(!isAuth) {
         firebase.auth().onAuthStateChanged(async (user) => {
           if (user) {
-            
+            console.log('1', to_name, isAuth)
             var uid = user.uid;
     
             this.auth_user = user;
             console.log('USER IS ', user);
+            console.log('2', to_name, isAuth)
     
             var db_user = await db.collection('users').doc(user.uid).get();
     
@@ -161,14 +162,25 @@ export default createStore({
               uid: db_user.data().uid,
               uuid: db_user.data().uuid,
             };
+            console.log('3', to_name, isAuth)
             
             context.commit('setUser', payload);
+            console.log('4', to_name, isAuth)
+
             context.commit('setIsAuth', true);
+            console.log('5', to_name, isAuth)
             
-            router.push('home');
+            // router.push('home');
+            if(to_name == null || to_name == undefined) {
+              to_name = 'home';
+            }
+            console.log(`Router goes to ${to_name} from Store Action`);
+            router.push(to_name);
               
             // ...
           } else {
+            console.log('6', to_name, isAuth)
+
             // User is signed out
 
             // ...

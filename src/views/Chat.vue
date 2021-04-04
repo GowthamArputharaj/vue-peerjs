@@ -1,7 +1,7 @@
 <template>
   <div class="chat" id="chat">
     <div class="text-primary">
-      <small>Welcome {{ authUser.displayName }} to Chat place..</small>
+      <small class="text-primary" v-if="authUser">Welcome to Chat place {{ authUser.displayName }}..</small>
     </div>
 
     <!-- hidden :d-none -->
@@ -20,14 +20,14 @@
     <div class="row text-primary ">
       <div class="rounded col-lg-4 col-md-6 col-sm-12 shadow-sm pt-4 opacity-half float-right ">
         <div class="form-group ">
-          <label for="connect_to">Connect to {{ connectTo }}</label>
-          <select id="selectUser" v-model="connectTo" class="form-control">
-            <option value="none">Select any user</option>
+          <label for="connect_to">Send to {{ connectTo }} <span v-if="showSelectUserError" class="text-danger">( Please Select Any User )</span></label>
+          <select id="selectUser" v-model="connectTo" class="form-control"  >
+            <option value="unknown">Select any user</option>
             <option v-for="user in allUsers" v-bind:key="user.uid" :value="user.uuid" >{{ user.displayName }}</option>
           </select>
         </div>
         <div class="form-group mt-2">
-          <label for="message">Message</label>
+          <label for="message">Message <span v-if="showMessageError" class="text-danger">( Please Enter Valid Message )</span></label>
           <textarea class="float-right form-control mb-2" v-model.trim="message" name="message" cols="30" rows="3" placeholder="Send some message" v-on:keyup.enter="connectSendMessage()"></textarea>
         </div>
         <div class="form-group">
@@ -47,6 +47,7 @@
 import store from '../store'
 import Peer from 'peerjs';
 import Swal from 'sweetalert2'
+import { printPeerRefreshed } from '../helper'
 
 export default {
   name: 'Chat',
@@ -55,9 +56,11 @@ export default {
       // uuid: '',
       displayName: '',
       peer: null,
-      connectTo: null,
-      message: null,
+      connectTo: 'unknown',
+      message: '',
       selectedUser: null,
+      showMessageError: false,
+      showSelectUserError: false,
     }
   },
   computed: {
@@ -73,8 +76,10 @@ export default {
     }
   },
   created(){
-
+console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC')
     var user = this.authUser;
+
+    this.$store.dispatch('allUsers', user.uid);
 
     console.log('My Peer id is: \n', user.uuid);
     
@@ -84,9 +89,11 @@ export default {
     // const peer = this.peer; 
     this.peer = new Peer(this.authUser.uuid);
 
+console.log(this.peer, this.authUser.uuid);
+console.log('this.peer, this.authUser.uuid');
     // Peer connection event listener
     this.peer.on('connection', (peerConnection) => {
-
+console.log('********************************************************************************')
       // Receive message event listener
       peerConnection.on('data', (data) => {
 
@@ -107,6 +114,18 @@ export default {
       // });
     });
 
+
+    // peer close event listener
+    this.peer.on('close', () => {
+      // Swal.fire({
+      //   title: 'Connection status',
+      //   text: 'Peer connection is refreshed',
+      //   type: 'success', 
+      //   confirmButtonText: 'Okay'
+      // });
+      printPeerRefreshed();
+    });
+
     // this.peer = peer;
 
   },
@@ -119,16 +138,33 @@ export default {
       this.$store.commit('changeName', this.displayName);
     },
     connectSendMessage() {
-      
-      // create connection to another Peer
-      const conn = this.peer.connect(this.connectTo);
+      this.message = this.message.trim();
 
-      // send message to connectTo peer id
-      conn.on('open', () => {
-        conn.send(this.message);
-        console.log('hi Connection opened  and Message Sent!')
-        this.message = '';
-      });
+      if(this.connectTo == 'unknown') {
+        this.showSelectUserError = true;
+      } else {
+        this.showSelectUserError = false;
+      }
+
+      if(this.message.length) {
+        this.showMessageError = false;
+
+        if(this.connectTo !== 'unknown') {
+          // create connection to another Peer
+          const conn = this.peer.connect(this.connectTo);
+    
+          // send message to connectTo peer id
+          conn.on('open', () => {
+            conn.send(this.message);
+            console.log('hi Connection opened  and Message Sent!')
+            this.message = '';
+          });
+        }
+        
+      } else {
+        this.showMessageError = true;
+      }
+      
     },
   }
 }

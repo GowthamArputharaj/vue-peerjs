@@ -76,6 +76,8 @@ export default {
           this.$store.commit('setUser', payload);
           this.$store.commit('setIsAuth', true);
 
+          this.$store.dispatch('dbAuthUser', 'home');
+
           this.$router.push('home');
           
         })

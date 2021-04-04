@@ -13,8 +13,8 @@ import store from '../store';
 const routes = [
   {
     path: '/',
-    name: 'h',
-    component: App,
+    name: '',
+    component: Home,
   },
   {
     path: '/home',
@@ -59,7 +59,7 @@ const routes = [
     component: Register
   },
   {
-    path: "/:catchAll(.*)",
+    path: "/:catchAll(.*)*",
     name: 'not_found',
     component: NotFound
   },
@@ -72,16 +72,24 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
 
-  if(store.getters.getIsAuth) {
-    next();
-  } else {
+  var homePage = 'home';
+
+  if(store.getters.getIsAuth) { 
+    if(to.name == 'login' || to.name == 'register') {
+      router.replace(homePage);
+    } else {
+      next();
+    }
+  } else { 
+
     if(to.name == 'login' || to.name == 'register') {
       // router.replace('login')
       next();
     } else {
       console.log('11111111111111111111111111111111111111111111111111')
-      store.dispatch('dbAuthUser');
+      store.dispatch('dbAuthUser', to.name);
       console.log('22222222222222222222222222222222222222222222222222')
+      // next();
     }
     console.log('Dispatched dbAuthUser from router else', to.name);
   }

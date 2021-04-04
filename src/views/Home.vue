@@ -1,6 +1,6 @@
 <template>
   <div class="home" id="home">
-    <small class="text-primary">Welcome Home {{ authUser.displayName }}..</small><br>
+    <small class="text-primary" v-if="authUser.displayName">Welcome to Home {{ authUser.displayName }} ..</small><br>
     <div class="row height-half">
       <div class="col-md-5 col-sm-12 rounded ml-3 ">
         <div class="row my-5">
@@ -8,7 +8,7 @@
             <button 
               class="btn btn-outline-secondary text-bold-800 text-danger"
               @click="generateConnectionLink()"
-              > Generate Connection Link
+              > Get Connection Link
             </button>
           </div>
             <div class="col-md-6 col-sm-12 text-center mb-3">
@@ -25,7 +25,7 @@
           
           <div class=" pb-2 h-75 pr-3 users" v-if="allUsers">
             <div v-for="user in allUsers" v-bind:key="user.id" class="zoom-hover bold-hover rounded p-2 m-1 opacity-75 text-primary">
-              {{ user.displayName }}
+              <span class="ml-2">{{ user.displayName }}</span>
             </div>
           </div>
         </div>
@@ -170,5 +170,8 @@ div.users {
 }
 .height-half {
   height: 50vh !important;
+}
+.h-75 {
+  max-height: 40vh;
 }
 </style>
