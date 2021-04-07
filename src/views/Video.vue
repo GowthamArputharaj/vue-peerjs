@@ -22,7 +22,8 @@
             <button class="rounded btn btn-primary" @click="connectCall()">Video Call</button>
           </div>
           <div class="form-group col-6">
-            <button class="rounded btn btn-danger float-right" @click="disconnectCall()">Disconnect Call</button>
+            <a href="" class="rounded btn btn-danger float-right" >Disconnect Call</a>
+            <!-- <button class="rounded btn btn-danger float-right" @click="disconnectCall()">Disconnect Call</button> -->
           </div>
         </div>
       </div>
@@ -97,23 +98,18 @@ export default {
     // this.connectTo = history.length;
 
     this.peer.on('call', async (call) => {
-      this.my_stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
-        console.log('this.my_stream');
-        console.log(this.my_stream);
-        call.answer(this.my_stream); // Answer the call with an A/V stream.
-        // document.querySelector('#my_stream').srcObject = stream;
+        var stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+
+        // set my_stream from our device capture
+        document.querySelector('#my_stream').srcObject = stream;
+
+        // Answer the call with an A/V stream.
+        call.answer(stream);
 
         call.on('stream', (remoteStream) => {
           // Show stream in some <video> element.
-          console.log('RemoteStream is');
-          console.log(remoteStream);
-
           document.querySelector('#other_stream').srcObject = remoteStream;
-          
         });
-      // }, (err) => {
-      //   console.error('Failed to get local stream', err);
-      // });
     });
 
     // peer close event listener
@@ -144,20 +140,17 @@ export default {
 
       if(this.connectTo != 'unknown') {
         try {
-            this.peer = new Peer(this.authUser.uuid);
+            // this.peer = new Peer(this.authUser.uuid);
 
-            console.log('stream connectCall()');
             this.my_stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
-            console.log(this.my_stream);
+            
+            // set my_stream from our device capture
             document.querySelector('#my_stream').srcObject = this.my_stream;
     
             const call = this.peer.call(this.connectTo, this.my_stream);
     
             call.on('stream', (remoteStream) => {
               // Show stream in some <video> element.
-              console.log('remoteStream connectCall()')
-              console.log(remoteStream);
-    
               document.querySelector('#other_stream').srcObject = remoteStream;
     
             });
