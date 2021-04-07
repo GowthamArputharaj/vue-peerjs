@@ -72,7 +72,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
 
-  var homePage = 'home';
+  var homePage = '/vue_peerjs_live/home';
 
   if(store.getters.getIsAuth) { 
     if(to.name == 'login' || to.name == 'register') {

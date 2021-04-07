@@ -113,7 +113,7 @@ export default {
           
             console.log('Register create*** THEN');
 
-            this.$router.push('/');
+            this.$router.push('vue_peerjs_live/');
 
           })
           .catch((error) => {

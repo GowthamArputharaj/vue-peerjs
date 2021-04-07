@@ -78,7 +78,7 @@ export default {
 
           this.$store.dispatch('dbAuthUser', 'home');
 
-          this.$router.push('home');
+          this.$router.push('vue_peerjs_live/home');
           
         })
         .catch((error) => {
