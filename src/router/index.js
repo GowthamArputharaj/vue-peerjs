@@ -12,12 +12,12 @@ import store from '../store';
 
 const routes = [
   {
-    path: '/',
+    path: '/vue_peerjs_live/',
     name: '',
     component: Home,
   },
   {
-    path: '/home',
+    path: '/vue_peerjs_live/home',
     name: 'home',
     component: Home,
     meta: {
@@ -25,7 +25,7 @@ const routes = [
     }
   },
   {
-    path: '/chat',
+    path: '/vue_peerjs_live/chat',
     name: 'chat',
     component: Chat,
     meta: {
@@ -33,7 +33,7 @@ const routes = [
     }
   },
   {
-    path: '/call',
+    path: '/vue_peerjs_live/call',
     name: 'call',
     component: Call,
     meta: {
@@ -41,7 +41,7 @@ const routes = [
     }
   },
   {
-    path: '/video',
+    path: '/vue_peerjs_live/video',
     name: 'video',
     component: Video,
     meta: {
@@ -49,17 +49,17 @@ const routes = [
     }
   },
   {
-    path: '/login',
+    path: '/vue_peerjs_live/login',
     name: 'login',
     component: Login,
   },
   {
-    path: '/register',
+    path: '/vue_peerjs_live/register',
     name: 'register',
     component: Register
   },
   {
-    path: "/:catchAll(.*)*",
+    path: "/vue_peerjs_live/:catchAll(.*)*",
     name: 'not_found',
     component: NotFound
   },
