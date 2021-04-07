@@ -63,7 +63,7 @@ export default {
         // User is signed out
         // ...
 
-        this.$router.push('vue_peerjs_live/login');
+        this.$router.push('login');
 
       }
     });

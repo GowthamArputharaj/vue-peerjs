@@ -12,12 +12,12 @@ import store from '../store';
 
 const routes = [
   {
-    path: '/vue_peerjs_live/',
+    path: '/',
     name: '',
     component: Home,
   },
   {
-    path: '/vue_peerjs_live/home',
+    path: '/home',
     name: 'home',
     component: Home,
     meta: {
@@ -25,7 +25,7 @@ const routes = [
     }
   },
   {
-    path: '/vue_peerjs_live/chat',
+    path: '/chat',
     name: 'chat',
     component: Chat,
     meta: {
@@ -33,7 +33,7 @@ const routes = [
     }
   },
   {
-    path: '/vue_peerjs_live/call',
+    path: '/call',
     name: 'call',
     component: Call,
     meta: {
@@ -41,7 +41,7 @@ const routes = [
     }
   },
   {
-    path: '/vue_peerjs_live/video',
+    path: '/video',
     name: 'video',
     component: Video,
     meta: {
@@ -49,17 +49,17 @@ const routes = [
     }
   },
   {
-    path: '/vue_peerjs_live/login',
+    path: '/login',
     name: 'login',
     component: Login,
   },
   {
-    path: '/vue_peerjs_live/register',
+    path: '/register',
     name: 'register',
     component: Register
   },
   {
-    path: "/vue_peerjs_live/:catchAll(.*)*",
+    path: "/:catchAll(.*)*",
     name: 'not_found',
     component: NotFound
   },
@@ -72,7 +72,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
 
-  var homePage = '/vue_peerjs_live/home';
+  var homePage = 'home';
 
   if(store.getters.getIsAuth) { 
     if(to.name == 'login' || to.name == 'register') {
