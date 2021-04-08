@@ -17,7 +17,6 @@ export default createStore({
   },
   getters: {
     getDisplayName: state => {
-      console.log('getName');
       if(state.isAuth) {
         return state.authUser.displayName;
       } else {
@@ -25,25 +24,20 @@ export default createStore({
       }
     },
     getUser(state) {
-      console.log('get User()', state.authUser);
       return state.authUser;
     },
     getIsAuth(state) {
-      console.log('get IsAuth()', state.isAuth);
       return state.isAuth;
     },
     getAllUsers(state) {
-      console.log('get getAllUsers()', state.allUsers);
       return state.allUsers;      
     }
   },
   mutations: {
     changeName(state, name) {
-      console.log('Change name', name)
       state.name = name;
     },
     setUser(state, payload) {
-      console.log('set User ', payload);
       state.authUser = payload;
     },
     setUuid(state, uuid) {
@@ -53,7 +47,6 @@ export default createStore({
       state.isAuth = status;
     },
     setAllUsers(state, payload) {
-      console.log('mutation ', payload);
       state.allUsers = payload;
     }
   },
@@ -68,16 +61,13 @@ export default createStore({
       .get()
       .then(querySnapshot => {
         const documents = querySnapshot.docs.map(doc => doc.data().newConnection);
-        console.log('ACTION DOCUMENTS ', documents);
         return documents;
         // do something with documents
       });
 
       au = au.filter(el => el !== undefined);
-      console.log('___________ACTION DOCUMENTS___________ ', au);
 
       if(au != undefined || au != null) {
-        console.log('000000000000000000000000000000000000000', au)
         context.commit('setAllUsers', au);
       }
 
@@ -87,7 +77,6 @@ export default createStore({
     createConnection(context, payload) {
       try {
 
-        console.log('trytrytrytrytrytrytrytrytrytrytrytry', payload);
         var senderName = null;
 
         db.collection('users').doc(payload.sender_uid).get()
@@ -101,15 +90,14 @@ export default createStore({
             uuid: u.uuid,
           };
   
-          console.log('SENDER IS ', u);
           senderName = u.displayName;
   
           // store connection in auth users's collection
           var dd = db.collection('users').doc(payload.authUser).collection('connections').doc(payload.sender_uid).set({
             newConnection,
           })
-          .then(() => console.log('then createConnection Connection Created!!!'))
-          .catch((err) => console.log('err is ', err.message))
+          .then(() => console.log(''))
+          .catch((err) => console.log(err.message))
 
           var u = context.getters.getUser;
           var newConnection = {
@@ -123,8 +111,8 @@ export default createStore({
           var dd = db.collection('users').doc(payload.sender_uid).collection('connections').doc(payload.authUser).set({
             newConnection,
           })
-          .then(() => console.log('then createConnection Connection Created!!!'))
-          .catch((err) => console.log('err is ', err.message))
+          .then(() => console.log(''))
+          .catch((err) => console.log(err.message))
 
 
           Swal.fire({
@@ -138,7 +126,7 @@ export default createStore({
         .catch((err) => console.log(err.message));
           
       } catch (error) {
-        console.log('CATCH ERROR createCOnnection ||||| ', error.message);
+        console.log(error.message);
       }
 
     },
@@ -147,12 +135,9 @@ export default createStore({
       if(!isAuth) {
         firebase.auth().onAuthStateChanged(async (user) => {
           if (user) {
-            console.log('1', to_name, isAuth)
             var uid = user.uid;
     
             this.auth_user = user;
-            console.log('USER IS ', user);
-            console.log('2', to_name, isAuth)
     
             var db_user = await db.collection('users').doc(user.uid).get();
     
@@ -162,24 +147,20 @@ export default createStore({
               uid: db_user.data().uid,
               uuid: db_user.data().uuid,
             };
-            console.log('3', to_name, isAuth)
             
             context.commit('setUser', payload);
-            console.log('4', to_name, isAuth)
 
             context.commit('setIsAuth', true);
-            console.log('5', to_name, isAuth)
             
             // router.push('home');
             if(to_name == null || to_name == undefined) {
               to_name = 'home';
             }
-            console.log(`Router goes to ${to_name} from Store Action`);
+            
             router.push(to_name);
               
             // ...
           } else {
-            console.log('6', to_name, isAuth)
 
             // User is signed out
 
