@@ -76,7 +76,6 @@ export default {
     }
   },
   created(){
-console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC')
     var user = this.authUser;
 
     this.$store.dispatch('allUsers', user.uid);
@@ -89,11 +88,9 @@ console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
     // const peer = this.peer; 
     this.peer = new Peer(this.authUser.uuid);
 
-console.log(this.peer, this.authUser.uuid);
-console.log('this.peer, this.authUser.uuid');
     // Peer connection event listener
     this.peer.on('connection', (peerConnection) => {
-console.log('********************************************************************************')
+      
       // Receive message event listener
       peerConnection.on('data', (data) => {
 
@@ -105,13 +102,8 @@ console.log('*******************************************************************
           confirmButtonText: 'Cool',
         });
 
-        console.log(`Received this message: ${data}`);
       });
 
-      // peerConnection.on('open', () => {
-      //   peerConnection.send('hello!');
-      //   console.log('Sending hello! message');
-      // });
     });
 
 
@@ -156,7 +148,7 @@ console.log('*******************************************************************
           // send message to connectTo peer id
           conn.on('open', () => {
             conn.send(this.message);
-            console.log('hi Connection opened  and Message Sent!')
+            
             this.message = '';
           });
         }

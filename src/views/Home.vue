@@ -99,7 +99,6 @@ export default {
 
     console.log('My Peer id is: \n', this.authUser.uuid);
     
-    console.log('Home page is Created');
     this.$store.dispatch('allUsers', this.authUser.uid);
 
   },
@@ -120,17 +119,12 @@ export default {
     },
     connectUsingLink() {
       
-      console.log('connectUsingLink '); console.log(this.addConnectionLink);
-
       var url = this.addConnectionLink;
       var u = new URL(url).searchParams;
       var sender_uid = u.get('c');
-      console.log('sender_uid ', sender_uid);
+      
       document.querySelector('.close').click();
-var payload = { authUser: this.authUser.uid, sender_uid};
-console.log(payload);
-console.log(')))))))))))))))))))))))))))))))');
-console.log(this.authUser.uid, '(((((((((((((((((((((((((((((((((', sender_uid);
+      var payload = { authUser: this.authUser.uid, sender_uid};
 
       this.$store.dispatch('createConnection', payload);
       // Swal.fire({

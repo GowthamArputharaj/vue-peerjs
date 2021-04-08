@@ -129,14 +129,12 @@ export default {
 
     // this.peer = peer;
     this.peer.on('error', function(err){
-        // alert("An error ocurred with peer: " + err);
         console.error(err);
     });
 
   },
   methods: {
     async connectCall() {
-      console.log('connectCall ()', this.connectTo);
       
       if(this.connectTo == 'unknown') {
         this.showSelectUserError = true;
@@ -162,12 +160,10 @@ export default {
             });
           
         } catch (error) {
-         console.log('ERROR connectCall()') ;
          console.log(error.message);
         }
       }
     
-      console.log('end');
     },
     disconnectCall() {
       this.peer.destroy();
@@ -175,9 +171,6 @@ export default {
 
       document.querySelector('#other_stream').srcObject = '';
       document.querySelector('#my_stream').srcObject = '';
-
-      console.log('this.peer is ', this.peer);
-      console.log('this.connectTo is ', this.connectTo);
       
     }
   }

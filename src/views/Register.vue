@@ -73,7 +73,6 @@ export default {
               uuid: this.uuid
             })
             .then(() => {
-              console.log('then');
 
               var payload = {
                 displayName: this.displayName,
@@ -82,17 +81,15 @@ export default {
                 uuid: this.uuid,
               };
 
-              console.log(payload);
-              
               // store in database with users collection(table)
               db.collection('users')
               .doc(user.uid)
               .set(payload)
               .then(() => {
-                console.log('Users added in Then');
+                
               })
               .catch(err => {
-                console.log('err.message', err.message);
+                console.log(err.message);
               });
               
               // store data in vuex
@@ -102,7 +99,7 @@ export default {
               
             })
             .catch((err) => {
-              console.log('catch', err.message)
+              console.log(err.message)
               Swal.fire({
                 title: 'Error',
                 text: err.message,
@@ -111,17 +108,13 @@ export default {
 
             });
           
-            console.log('Register create*** THEN');
-
             this.$router.push('/');
 
           })
           .catch((error) => {
             var errorCode = error.code;
             var errorMessage = error.message;
-            // ..
-            console.log('Register create*** cat');
-
+            
             Swal.fire({
               title: 'Error',
               text: errorMessage,
@@ -131,7 +124,7 @@ export default {
           });
 
       } catch (err) {
-        console.log('db err', err.message);
+        console.log(err.message);
       }
 
 

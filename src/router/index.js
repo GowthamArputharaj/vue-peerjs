@@ -86,15 +86,11 @@ router.beforeEach((to, from, next) => {
       // router.replace('login')
       next();
     } else {
-      console.log('11111111111111111111111111111111111111111111111111')
       store.dispatch('dbAuthUser', to.name);
-      console.log('22222222222222222222222222222222222222222222222222')
       // next();
     }
     console.log('Dispatched dbAuthUser from router else', to.name);
   }
-  // if(to.meta.requiresAuth && !store.getters.getIsAuth) {
-  // } to.name == 'login'
 });
 
 export default router

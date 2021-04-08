@@ -130,7 +130,6 @@ export default {
   },
   methods: {
     async connectCall() {
-      console.log('connectCall ()', this.connectTo);
 
       if(this.connectTo == 'unknown') {
         this.showSelectUserError = true;
@@ -156,12 +155,10 @@ export default {
             });
           
         } catch (error) {
-        console.log('ERROR') ;
-        console.log(error.message);
+          console.log(error.message);
         }
       }
     
-      console.log('end');
     },
     disconnectCall() {
       this.peer.destroy();
@@ -169,9 +166,6 @@ export default {
 
       document.querySelector('#other_stream').srcObject = '';
       document.querySelector('#my_stream').srcObject = '';
-
-      console.log('this.peer is ', this.peer);
-      console.log('this.connectTo is ', this.connectTo);
       
     }
   }

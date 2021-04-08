@@ -39,7 +39,7 @@ export default {
         var uid = user.uid;
 
         this.auth_user = user;
-        console.log('USER IS ', user);
+        // console.log('USER IS ', user);
 
         var db_user = await db.collection('users').doc(user.uid).get();
 
@@ -56,15 +56,8 @@ export default {
 
         this.$store.dispatch('dbAuthUser');
         
-        // this.$router.push('home');
-          
-        // ...
       } else {
-        // User is signed out
-        // ...
-
         this.$router.push('login');
-
       }
     });
   }
