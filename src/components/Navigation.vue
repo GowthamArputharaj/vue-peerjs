@@ -43,7 +43,6 @@ export default {
   name: "Navigation",
   computed: {
     isAuth() {
-      console.log('NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNn1111', this.$store.getters.getIsAuth)
       return this.$store.getters.getIsAuth;
     }
   },

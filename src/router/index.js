@@ -89,7 +89,6 @@ router.beforeEach((to, from, next) => {
       store.dispatch('dbAuthUser', to.name);
       // next();
     }
-    console.log('Dispatched dbAuthUser from router else', to.name);
   }
 });
 

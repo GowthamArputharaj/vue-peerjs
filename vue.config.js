@@ -1,3 +1,3 @@
-// module.exports = {
-//     publicPath: '/vue_peerjs_live/'
-// }
+module.exports = {
+    publicPath: '/chat_webrtc_demo/'
+}
